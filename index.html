@@ -12,7 +12,7 @@
   <body class="bg-gray-100 min-h-screen flex items-center justify-center">
     <div class="bg-white p-8 rounded shadow-md w-full max-w-lg">
       <!-- Passo 1: Lista de Cartões Salvos -->
-      <div id="passo1">
+      <div id="passo1" class="passo hidden">
         <h3 class="text-lg font-semibold mb-4">Meus Cartões Salvos</h3>
         <ul>
           <li class="flex justify-between items-center border-b pb-2">
@@ -21,13 +21,24 @@
               <span class="text-gray-500">**** **** **** 1234</span>
             </div>
             <button
-              class="px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 focus:outline-none focus:bg-indigo-500"
+              class="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-500 focus:outline-none focus:bg-blue-500"
               onclick="exibirModal()"
             >
               Usar
             </button>
           </li>
-          <!-- Adicionar mais itens conforme necessário -->
+          <li class="flex justify-between items-center border-b py-2 pt-4">
+            <div>
+              <h4 class="text-sm font-semibold">Cartão Visa</h4>
+              <span class="text-gray-500">**** **** **** 1234</span>
+            </div>
+            <button
+              class="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-500 focus:outline-none focus:bg-blue-500"
+              onclick="exibirModal()"
+            >
+              Usar
+            </button>
+          </li>
         </ul>
         <div>
           <!-- Campos do formulário para adicionar um novo cartão -->
@@ -48,6 +59,7 @@
                   required
                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 />
+                <span id="error_message" class="text-red-500"></span>
               </div>
 
               <div class="mb-4 grid grid-cols-3 gap-4">
@@ -61,10 +73,13 @@
                     type="text"
                     id="expiry_date"
                     name="expiry_date"
-                    placeholder="MM/AA"
+                    placeholder="MM/AAAA"
+                    placeholder="MM/AAAA"
+                    name="expiry_date"
                     required
-                    pattern="\d{2}/\d{2}"
+                    pattern="\d{2}/\d{4}"
                     class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    onkeyup="validarData()"
                   />
                 </div>
                 <div>
@@ -105,7 +120,7 @@
                 <button
                   type="submit"
                   onclick="proximoPasso()"
-                  class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 focus:outline-none focus:bg-indigo-500"
+                  class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500 focus:outline-none focus:bg-blue-500"
                 >
                   Adicionar Cartão
                 </button>
@@ -148,7 +163,7 @@
               <button
                 type="submit"
                 onclick="GerarPaymentToken()"
-                class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 focus:outline-none focus:bg-indigo-500"
+                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500 focus:outline-none focus:bg-blue-500"
               >
                 Finalizar Compra
               </button>
@@ -157,7 +172,7 @@
         </div>
       </div>
 
-      <div id="passo2" class="hidden">
+      <div id="passo2" class="passo hidden">
         <h3 class="text-lg font-semibold mb-4">Dados do Cartão</h3>
 
         <form>
@@ -195,10 +210,11 @@
               >Tipo de Cadastro</label
             >
             <div class="mt-1">
+              
               <label class="inline-flex items-center">
                 <input
                   type="radio"
-                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  class="h-4 w-4 border-gray-300 focus:ring-2 focus:ring-blue-300 mr-2"
                   name="tipo_cadastro"
                   value="pf"
                   checked
@@ -291,14 +307,14 @@
           <div class="flex items-center justify-between">
             <button
               type="button"
-              class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 focus:outline-none focus:bg-indigo-500"
+              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500 focus:outline-none focus:bg-blue-500"
               onclick="anteriorPasso()"
             >
               Voltar
             </button>
             <button
               type="submit"
-              class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 focus:outline-none focus:bg-indigo-500"
+              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500 focus:outline-none focus:bg-blue-500"
               onclick="proximoPasso2()"
             >
               Endereço de Cobrança
@@ -307,7 +323,7 @@
         </form>
       </div>
 
-      <div id="passo3" class="hidden">
+      <div id="passo3" class="passo hidden">
         <h3 class="text-lg font-semibold mb-4">Endereço de Cobrança</h3>
         <form>
           <div class="mb-4">
@@ -419,7 +435,7 @@
           <div class="flex items-center justify-between">
             <button
               type="button"
-              class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 focus:outline-none focus:bg-indigo-500"
+              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500 focus:outline-none focus:bg-blue-500"
               onclick="anteriorPasso2()"
             >
               Voltar
@@ -427,7 +443,7 @@
 
             <button
               type="submit"
-              class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 focus:outline-none focus:bg-indigo-500"
+              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500 focus:outline-none focus:bg-blue-500"
             >
               Finalizar Pagamento
             </button>
@@ -437,92 +453,346 @@
     </div>
 
     <script>
+      // Função exibir modal
+      function exibirModal() {
+        var modal = document.getElementById("modal");
+        modal.classList.remove("hidden");
+      }
+      // Função para exibir a seção especificada e ocultar as outras
+      function exibirSecao(secaoId) {
+        var secoes = document.querySelectorAll(".passo");
+        secoes.forEach(function (secao) {
+          if (secao.id === secaoId) {
+            secao.classList.remove("hidden");
+          } else {
+            secao.classList.add("hidden");
+          }
+        });
+      }
+
+      // Função para navegar para o próximo passo
       function proximoPasso() {
-        event.preventDefault();
-        document.getElementById("passo1").classList.add("hidden");
-        document.getElementById("passo2").classList.remove("hidden");
-      }
-
-      function cvvPasso() {
-        event.preventDefault();
-        document.getElementById("passo2").classList.remove("hidden");
-      }
-
-      function anteriorPasso() {
-        event.preventDefault();
-
-        document.getElementById("passo2").classList.add("hidden");
-        document.getElementById("passo1").classList.remove("hidden");
-      }
-
-      function proximoPasso2() {
-        event.preventDefault();
-
-        document.getElementById("passo2").classList.add("hidden");
-        document.getElementById("passo3").classList.remove("hidden");
-      }
-
-      function anteriorPasso2() {
-        event.preventDefault();
-
-        document.getElementById("passo3").classList.add("hidden");
-        document.getElementById("passo2").classList.remove("hidden");
-      }
-
-      function toggleCadastro() {
-        event.preventDefault();
-
-        const tipoCadastro = document.querySelector(
-          'input[name="tipo_cadastro"]:checked'
-        ).value;
-        const pfFields = document.getElementById("pf_fields");
-        const pjFields = document.getElementById("pj_fields");
-
-        if (tipoCadastro === "pf") {
-          pfFields.classList.remove("hidden");
-          pjFields.classList.add("hidden");
-        } else if (tipoCadastro === "pj") {
-          pfFields.classList.add("hidden");
-          pjFields.classList.remove("hidden");
+        if (validarPasso1()) {
+          exibirSecao("passo2");
+        } else {
+          alert("Preencha todos os campos corretamente antes de avançar.");
         }
       }
 
-      function GerarPaymentToken() {
-        event.preventDefault();
-
-        // Obtenção dos valores do formulário
-        const cardNumber = document.getElementById("cardNumber").value;
+      // Função para voltar para o passo anterior
+      function anteriorPasso() {
+        exibirSecao("passo1");
       }
 
-      function exibirModal() {
-        document.getElementById("modal").classList.remove("hidden");
+      // Função para navegar para o próximo passo depois de preencher os dados do cartão
+      function proximoPasso2() {
+        exibirSecao("passo3");
       }
-      function fecharModal() {
-        document.getElementById("modal").classList.add("hidden");
+
+      // Função para voltar para o passo anterior depois de preencher os dados do cartão
+      function anteriorPasso2() {
+        exibirSecao("passo2");
       }
-      function validarFormulario() {
+
+      // Inicialmente, exibir o primeiro passo e ocultar os outros
+      document.addEventListener("DOMContentLoaded", function () {
+        exibirSecao("passo1");
+      });
+    </script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var cardNumberInput = document.getElementById("card_number");
+        var expiryDateInput = document.getElementById("expiry_date");
+        var cvcInput = document.getElementById("cvc");
+        var emailInput = document.getElementById("email");
+        var cpfInput = document.getElementById("cpf");
+        var cnpjInput = document.getElementById("cnpj");
+        var telefoneInput = document.getElementById("phone");
+        var ufInput = document.getElementById("uf");
+
+        cardNumberInput.addEventListener("input", validarNumeroCartao);
+        expiryDateInput.addEventListener("input", validarDataExpiracao);
+        cvcInput.addEventListener("input", validarCVC);
+        emailInput.addEventListener("input", validarEmail);
+        cpfInput.addEventListener("input", validarCPF);
+        cnpjInput.addEventListener("input", validarCNPJ);
+        telefoneInput.addEventListener("input", validarTelefone);
+        ufInput.addEventListener("input", validarUF);
+      });
+
+      function validarNumeroCartao() {
+        var cardNumberInput = document.getElementById("card_number");
+        var cardNumber = cardNumberInput.value.replace(/[^\d]/g, "");
+
+        if (cardNumber.length > 16) {
+          cardNumber = cardNumber.slice(0, 16);
+        }
+
+        if (!isValidLuhn(cardNumber)) {
+          console.log("Cartão inválido!");
+        }
+
+        cardNumberInput.value = cardNumber;
+        validarFormulario();
+      }
+
+      function validarDataExpiracao() {
+        var expiryDateInput = document.getElementById("expiry_date");
+        var today = new Date();
+        var currentMonth = today.getMonth() + 1;
+        var currentYear = today.getFullYear().toString().slice(2);
+        var expiryDate = expiryDateInput.value.replace(/[^\d]/g, "");
+
+        if (expiryDate.length > 6) {
+          expiryDate = expiryDate.slice(0, 6);
+        }
+
+        if (expiryDate.length >= 2 && expiryDate.indexOf("/") === -1) {
+          expiryDate = expiryDate.slice(0, 2) + "/" + expiryDate.slice(2);
+        }
+
+        var inputMonth = expiryDate.slice(0, 2);
+        var inputYear = expiryDate.slice(3);
+
+        if (
+          inputYear < currentYear ||
+          (inputYear === currentYear && inputMonth < currentMonth)
+        ) {
+          console.log("Data de expiração inválida!");
+        }
+
+        expiryDateInput.value = expiryDate;
+        validarFormulario();
+      }
+
+      function validarCVC() {
+        var cvcInput = document.getElementById("cvc");
+        var cvc = cvcInput.value.replace(/[^\d]/g, "");
+
+        if (cvc.length > 3) {
+          cvc = cvc.slice(0, 3);
+        }
+
+        cvcInput.value = cvc;
+        validarFormulario();
+      }
+
+      function validarEmail() {
+        var emailInput = document.getElementById("email");
+        var email = emailInput.value;
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(email)) {
+          console.log("E-mail inválido!");
+        }
+
+        validarFormulario();
+      }
+
+      function validarCPF() {
+        var cpfInput = document.getElementById("cpf");
+        var cpf = cpfInput.value;
+
+        if (!isValidCPF(cpf)) {
+          console.log("CPF inválido!");
+        }
+
+        validarFormulario();
+      }
+
+      function validarCNPJ() {
+        var cnpjInput = document.getElementById("cnpj");
+        var cnpj = cnpjInput.value;
+
+        if (!isValidCNPJ(cnpj)) {
+          console.log("CNPJ inválido!");
+        }
+
+        validarFormulario();
+      }
+
+      function validarTelefone() {
+        var telefoneInput = document.getElementById("phone");
+        var telefone = telefoneInput.value;
+        var telefoneRegex = /^[0-9]{10,11}$/;
+
+        if (!telefoneRegex.test(telefone)) {
+          console.log("Número de telefone inválido!");
+        }
+
+        validarFormulario();
+      }
+
+      function validarUF() {
+        var ufInput = document.getElementById("uf");
+        var uf = ufInput.value;
+        var ufsValidas = [
+          "AC",
+          "AL",
+          "AP",
+          "AM",
+          "BA",
+          "CE",
+          "DF",
+          "ES",
+          "GO",
+          "MA",
+          "MT",
+          "MS",
+          "MG",
+          "PA",
+          "PB",
+          "PR",
+          "PE",
+          "PI",
+          "RJ",
+          "RN",
+          "RS",
+          "RO",
+          "RR",
+          "SC",
+          "SP",
+          "SE",
+          "TO",
+        ];
+
+        if (!ufsValidas.includes(uf.toUpperCase())) {
+          console.log("UF inválida!");
+        }
+
+        validarFormulario();
+      }
+
+      function validarPasso1() {
+        var nome = document.getElementById("cardholder_name").value;
         var numeroCartao = document.getElementById("card_number").value;
         var dataExpiracao = document.getElementById("expiry_date").value;
         var cvc = document.getElementById("cvc").value;
+        if (numeroCartao && dataExpiracao && cvc && nome) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+      function validarFormulario() {
+       
         var email = document.getElementById("email").value;
         var cpf = document.getElementById("cpf").value;
         var cnpj = document.getElementById("cnpj").value;
         var telefone = document.getElementById("phone").value;
+        var uf = document.getElementById("uf").value;
 
-    
+        if (       
+          email &&
+          cpf &&
+          cnpj &&
+          telefone &&
+          uf
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      }
 
+      function isValidLuhn(cardNumber) {
+        var sum = 0;
+        var shouldDouble = false;
+        for (var i = cardNumber.length - 1; i >= 0; i--) {
+          var digit = parseInt(cardNumber.charAt(i));
+          if (shouldDouble) {
+            digit *= 2;
+            if (digit > 9) digit -= 9;
+          }
+          sum += digit;
+          shouldDouble = !shouldDouble;
+        }
+        return sum % 10 === 0;
+      }
+
+      function isValidCPF(cpf) {
+        cpf = cpf.replace(/[^\d]+/g, "");
+        if (cpf === "") return false;
+        // Elimina CPFs invalidos conhecidos
+        if (
+          cpf.length !== 11 ||
+          cpf === "00000000000" ||
+          cpf === "11111111111" ||
+          cpf === "22222222222" ||
+          cpf === "33333333333" ||
+          cpf === "44444444444" ||
+          cpf === "55555555555" ||
+          cpf === "66666666666" ||
+          cpf === "77777777777" ||
+          cpf === "88888888888" ||
+          cpf === "99999999999"
+        )
+          return false;
+        // Valida 1o digito
+        var add = 0;
+        for (var i = 0; i < 9; i++) add += parseInt(cpf.charAt(i)) * (10 - i);
+        var rev = 11 - (add % 11);
+        if (rev === 10 || rev === 11) rev = 0;
+        if (rev !== parseInt(cpf.charAt(9))) return false;
+        // Valida 2o digito
+        add = 0;
+        for (i = 0; i < 10; i++) add += parseInt(cpf.charAt(i)) * (11 - i);
+        rev = 11 - (add % 11);
+        if (rev === 10 || rev === 11) rev = 0;
+        if (rev !== parseInt(cpf.charAt(10))) return false;
         return true;
       }
 
-      // Funções de validação definidas anteriormente
-      // ...
+      function isValidCNPJ(cnpj) {
+        cnpj = cnpj.replace(/[^\d]+/g, "");
+        if (cnpj === "") return false;
+        if (cnpj.length !== 14) return false;
+        // Elimina CNPJs invalidos conhecidos
+        if (
+          cnpj === "00000000000000" ||
+          cnpj === "11111111111111" ||
+          cnpj === "22222222222222" ||
+          cnpj === "33333333333333" ||
+          cnpj === "44444444444444" ||
+          cnpj === "55555555555555" ||
+          cnpj === "66666666666666" ||
+          cnpj === "77777777777777" ||
+          cnpj === "88888888888888" ||
+          cnpj === "99999999999999"
+        )
+          return false;
+        // Valida DVs
+        var tamanho = cnpj.length - 2;
+        var numeros = cnpj.substring(0, tamanho);
+        var digitos = cnpj.substring(tamanho);
+        var soma = 0;
+        var pos = tamanho - 7;
+        for (var i = tamanho; i >= 1; i--) {
+          soma += numeros.charAt(tamanho - i) * pos--;
+          if (pos < 2) pos = 9;
+        }
+        var resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
+        if (resultado !== parseInt(digitos.charAt(0))) return false;
+        tamanho = tamanho + 1;
+        numeros = cnpj.substring(0, tamanho);
+        soma = 0;
+        pos = tamanho - 7;
+        for (i = tamanho; i >= 1; i--) {
+          soma += numeros.charAt(tamanho - i) * pos--;
+          if (pos < 2) pos = 9;
+        }
+        resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
+        if (resultado !== parseInt(digitos.charAt(1))) return false;
+        return true;
+      }
 
       // Evento de envio do formulário
       document
         .querySelector("form")
         .addEventListener("submit", function (event) {
           if (!validarFormulario()) {
-            event.preventDefault(); // Impede o envio do formulário se a validação falhar
+            event.preventDefault();
           }
         });
     </script>
