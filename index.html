@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkout de Pagamento</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded shadow-md w-full max-w-lg">
+      <!-- Passo 1: Lista de Cartões Salvos -->
+      <div id="passo1">
+        <h3 class="text-lg font-semibold mb-4">Meus Cartões Salvos</h3>
+        <ul>
+          <li class="flex justify-between items-center border-b pb-2">
+            <div>
+              <h4 class="text-sm font-semibold">Cartão Visa</h4>
+              <span class="text-gray-500">**** **** **** 1234</span>
+            </div>
+            <button
+              class="px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 focus:outline-none focus:bg-indigo-500"
+              onclick="exibirModal()"
+            >
+              Usar
+            </button>
+          </li>
+          <!-- Adicionar mais itens conforme necessário -->
+        </ul>
+        <div>
+          <!-- Campos do formulário para adicionar um novo cartão -->
+          <div class="mb-6 mt-10">
+            <h4 class="text-lg font-semibold mb-4">Novo Cartão</h4>
+            <form>
+              <div class="mb-4">
+                <label
+                  for="card_number"
+                  class="block text-sm font-medium text-gray-700"
+                  >Número do Cartão</label
+                >
+                <input
+                  type="text"
+                  id="card_number"
+                  name="card_number"
+                  placeholder="**** **** **** ****"
+                  required
+                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                />
+              </div>
+
+              <div class="mb-4 grid grid-cols-3 gap-4">
+                <div>
+                  <label
+                    for="expiry_date"
+                    class="block text-sm font-medium text-gray-700"
+                    >Data de Expiração</label
+                  >
+                  <input
+                    type="text"
+                    id="expiry_date"
+                    name="expiry_date"
+                    placeholder="MM/AA"
+                    required
+                    pattern="\d{2}/\d{2}"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="cvc"
+                    class="block text-sm font-medium text-gray-700"
+                    >CVC</label
+                  >
+                  <input
+                    type="text"
+                    id="cvc"
+                    placeholder="***"
+                    required
+                    pattern="\d{3}"
+                    name="cvc"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  />
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label
+                  for="cardholder_name"
+                  class="block text-sm font-medium text-gray-700"
+                  >Nome do Titular do Cartão</label
+                >
+                <input
+                  type="text"
+                  id="cardholder_name"
+                  name="cardholder_name"
+                  required
+                  placeholder="Nome e sobrenome"
+                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                />
+              </div>
+
+              <div class="flex items-center justify-between">
+                <button
+                  type="submit"
+                  onclick="proximoPasso()"
+                  class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 focus:outline-none focus:bg-indigo-500"
+                >
+                  Adicionar Cartão
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <!-- Passo modal cvv: -->
+
+      <div
+        id="modal"
+        class="hidden fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center z-50"
+      >
+        <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+          <h3 class="text-lg font-semibold mb-4">Adicionar CVV</h3>
+          <form>
+            <div class="mb-4">
+              <label for="cvv" class="block text-sm font-medium text-gray-700"
+                >CVV</label
+              >
+              <input
+                type="text"
+                id="cvv"
+                placeholder="***"
+                required
+                pattern="\d{3}"
+                name="cvv"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              />
+            </div>
+            <div class="flex items-center justify-between">
+              <button
+                type="button"
+                class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 focus:outline-none focus:bg-gray-500"
+                onclick="fecharModal()"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                onclick="GerarPaymentToken()"
+                class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 focus:outline-none focus:bg-indigo-500"
+              >
+                Finalizar Compra
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div id="passo2" class="hidden">
+        <h3 class="text-lg font-semibold mb-4">Dados do Cartão</h3>
+
+        <form>
+          <div class="mb-4">
+            <label for="email" class="block text-sm font-medium text-gray-700"
+              >Email</label
+            >
+            <input
+              type="email"
+              id="email"
+              placeholder="Email"
+              required
+              pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+              name="email"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+          </div>
+          <div class="mb-4">
+            <label for="phone" class="block text-sm font-medium text-gray-700"
+              >Telefone</label
+            >
+            <input
+              type="tel"
+              id="phone"
+              placeholder="Telefone"
+              required
+              pattern="[0-9]{10,11}"
+              name="phone"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+          </div>
+
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700"
+              >Tipo de Cadastro</label
+            >
+            <div class="mt-1">
+              <label class="inline-flex items-center">
+                <input
+                  type="radio"
+                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  name="tipo_cadastro"
+                  value="pf"
+                  checked
+                  onchange="toggleCadastro()"
+                />
+                Pessoa Física
+              </label>
+              <label class="inline-flex items-center ml-6">
+                <input
+                  type="radio"
+                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  name="tipo_cadastro"
+                  value="pj"
+                  onchange="toggleCadastro()"
+                />
+                Pessoa Jurídica
+              </label>
+            </div>
+          </div>
+
+          <!-- Campos PF -->
+          <div id="pf_fields">
+            <div class="mb-4">
+              <label for="cpf" class="block text-sm font-medium text-gray-700"
+                >CPF</label
+              >
+              <input
+                type="text"
+                id="cpf"
+                name="cpf"
+                placeholder="CPF"
+                required
+                pattern="\d{3}\.\d{3}\.\d{3}-\d{2}"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              />
+            </div>
+            <div class="mb-4">
+              <label
+                for="nascimento"
+                class="block text-sm font-medium text-gray-700"
+                name="nascimento"
+                >Data de Nascimento</label
+              >
+              <input
+                type="date"
+                id="nascimento"
+                name="nascimento"
+                required
+                pattern="\d{2}/\d{2}/\d{4}"
+                placeholder="Data de Nascimento"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              />
+            </div>
+          </div>
+
+          <!-- Campos PJ -->
+          <div id="pj_fields" class="hidden">
+            <div class="mb-4">
+              <label for="cnpj" class="block text-sm font-medium text-gray-700"
+                >CNPJ</label
+              >
+              <input
+                type="text"
+                id="cnpj"
+                placeholder="CNPJ"
+                required
+                pattern="\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}"
+                name="cnpj"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              />
+            </div>
+            <div class="mb-4">
+              <label
+                for="razao_social"
+                class="block text-sm font-medium text-gray-700"
+                >Razão Social</label
+              >
+              <input
+                type="text"
+                id="razao_social"
+                placeholder="Razão Social"
+                required
+                pattern="[a-zA-Z ]+"
+                name="razao_social"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              />
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <button
+              type="button"
+              class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 focus:outline-none focus:bg-indigo-500"
+              onclick="anteriorPasso()"
+            >
+              Voltar
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 focus:outline-none focus:bg-indigo-500"
+              onclick="proximoPasso2()"
+            >
+              Endereço de Cobrança
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div id="passo3" class="hidden">
+        <h3 class="text-lg font-semibold mb-4">Endereço de Cobrança</h3>
+        <form>
+          <div class="mb-4">
+            <label for="rua" class="block text-sm font-medium text-gray-700"
+              >Rua</label
+            >
+            <input
+              type="text"
+              id="rua"
+              placeholder="Rua"
+              required
+              pattern="[a-zA-Z ]+"
+              name="rua"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+          </div>
+          <div class="mb-4">
+            <label for="numero" class="block text-sm font-medium text-gray-700"
+              >Número</label
+            >
+            <input
+              type="number"
+              id="numero"
+              placeholder="Numero"
+              required
+              pattern="\d+"
+              min="0"
+              name="numero"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+          </div>
+          <div class="mb-4">
+            <label for="bairro" class="block text-sm font-medium text-gray-700"
+              >Bairro</label
+            >
+            <input
+              type="text"
+              id="bairro"
+              placeholder="Bairro"
+              required
+              pattern="[a-zA-Z ]+"
+              name="bairro"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+          </div>
+          <div class="mb-4">
+            <label for="cep" class="block text-sm font-medium text-gray-700"
+              >CEP</label
+            >
+            <input
+              type="text"
+              id="cep"
+              placeholder="CEP"
+              required
+              pattern="\d{5}-\d{3}"
+              maxlength="9"
+              name="cep"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+          </div>
+          <div class="mb-4">
+            <label for="cidade" class="block text-sm font-medium text-gray-700"
+              >Cidade</label
+            >
+            <input
+              type="text"
+              id="cidade"
+              placeholder="Cidade"
+              required
+              pattern="[a-zA-Z ]+"
+              maxlength="50"
+              minlength="3"
+              name="cidade"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+          </div>
+          <div class="mb-4">
+            <label
+              for="complemento"
+              name="complemento"
+              class="block text-sm font-medium text-gray-700"
+              >Complemento</label
+            >
+            <input
+              type="text"
+              id="complemento"
+              placeholder="Complemento"
+              maxlength="100"
+              name="complemento"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+          </div>
+          <div class="mb-4">
+            <label for="uf" class="block text-sm font-medium text-gray-700"
+              >UF</label
+            >
+            <input
+              type="text"
+              id="uf"
+              placeholder="UF"
+              required
+              pattern="[a-zA-Z ]+"
+              maxlength="2"
+              minlength="2"
+              name="uf"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+          </div>
+          <div class="flex items-center justify-between">
+            <button
+              type="button"
+              class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 focus:outline-none focus:bg-indigo-500"
+              onclick="anteriorPasso2()"
+            >
+              Voltar
+            </button>
+
+            <button
+              type="submit"
+              class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 focus:outline-none focus:bg-indigo-500"
+            >
+              Finalizar Pagamento
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      function proximoPasso() {
+        event.preventDefault();
+        document.getElementById("passo1").classList.add("hidden");
+        document.getElementById("passo2").classList.remove("hidden");
+      }
+
+      function cvvPasso() {
+        event.preventDefault();
+        document.getElementById("passo2").classList.remove("hidden");
+      }
+
+      function anteriorPasso() {
+        event.preventDefault();
+
+        document.getElementById("passo2").classList.add("hidden");
+        document.getElementById("passo1").classList.remove("hidden");
+      }
+
+      function proximoPasso2() {
+        event.preventDefault();
+
+        document.getElementById("passo2").classList.add("hidden");
+        document.getElementById("passo3").classList.remove("hidden");
+      }
+
+      function anteriorPasso2() {
+        event.preventDefault();
+
+        document.getElementById("passo3").classList.add("hidden");
+        document.getElementById("passo2").classList.remove("hidden");
+      }
+
+      function toggleCadastro() {
+        event.preventDefault();
+
+        const tipoCadastro = document.querySelector(
+          'input[name="tipo_cadastro"]:checked'
+        ).value;
+        const pfFields = document.getElementById("pf_fields");
+        const pjFields = document.getElementById("pj_fields");
+
+        if (tipoCadastro === "pf") {
+          pfFields.classList.remove("hidden");
+          pjFields.classList.add("hidden");
+        } else if (tipoCadastro === "pj") {
+          pfFields.classList.add("hidden");
+          pjFields.classList.remove("hidden");
+        }
+      }
+
+      function GerarPaymentToken() {
+        event.preventDefault();
+
+        // Obtenção dos valores do formulário
+        const cardNumber = document.getElementById("cardNumber").value;
+      }
+
+      function exibirModal() {
+        document.getElementById("modal").classList.remove("hidden");
+      }
+      function fecharModal() {
+        document.getElementById("modal").classList.add("hidden");
+      }
+      function validarFormulario() {
+        var numeroCartao = document.getElementById("card_number").value;
+        var dataExpiracao = document.getElementById("expiry_date").value;
+        var cvc = document.getElementById("cvc").value;
+        var email = document.getElementById("email").value;
+        var cpf = document.getElementById("cpf").value;
+        var cnpj = document.getElementById("cnpj").value;
+        var telefone = document.getElementById("phone").value;
+
+    
+
+        return true;
+      }
+
+      // Funções de validação definidas anteriormente
+      // ...
+
+      // Evento de envio do formulário
+      document
+        .querySelector("form")
+        .addEventListener("submit", function (event) {
+          if (!validarFormulario()) {
+            event.preventDefault(); // Impede o envio do formulário se a validação falhar
+          }
+        });
+    </script>
+  </body>
+</html>
